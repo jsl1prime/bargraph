@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>벤치비_5G리포트_전국지도</title>
+<link href="fiveg_map.css" rel="stylesheet" type="text/css"/>
+<script src="http://code.jquery.com/jquery-1.5.js"></script>
+<script>
+	$( document ).ready( function() {
+		  
+		  maxValue = -Infinity;
+		  var pixel = 46; //bar_length길이 최대 46px
+		  areaData = ['강원도','경기도','경상남도','경상북도','광주광역시','대구광역시','대전광역시','부산광역시','서울특별시','울산광역시','인천광역시','전라남도','전라북도','제주특별자치도','충청남도','충청북도'];
+		  positionXdata = [282, 205, 226, 307, 80, 248, 154, 307, 124, 333, 42, 155, 148, 99, 80, 227];
+		  positionYdata = [26, 32, 353, 138, 336, 248, 153, 350, 35, 246, 73, 364, 264, 481, 194, 144];
+		  
+		  dataArray = [];
+		  dataArray[0] = [377.92,291.94,327.49,109.50,166.36,148.74,224.38,369.92,304.93,394.96,299.41,225.32,208.70,212.71,240.36,144.27]; //KT
+		  dataArray[1] = [210.74,392.19,240.73,265.19,244.56,282.34,439.66,259.38,360.59,210.99,437.75,214.11,232.77,270.04,425.08,389.14]; //SKT
+		  dataArray[2] = ['nodata',259.13,'nodata','nodata',244.52,179.04,202.54,194.56,287.44,'nodata',303.13,'nodata','nodata',294.99,'nodata',127.71]; //U+
+		  
+		  dataArray.forEach(function(x) {
+		  	x = x.map(function(item) {
+				return isNaN(item) == true ? 0 : item;
+           });
+		   var rowMax = Math.max.apply(Math, x);
+			if (rowMax > maxValue) maxValue = rowMax;
+		  });
+		  //console.log(maxValue);
+
+		  for(i = 0;i < areaData.length;i++){
+
+				var tag = '<div class="map_graph mapPosition'+[i]+'">';
+		  		  tag +='<div class="provider_wrap">';
+				  tag +='<div class="bar_wrap">';
+				  tag +='<div class="dateandract">';
+				  tag +='<span class="speed_data datanum_txt0'+[i]+'"></span>';
+				  tag +='<div class="bar_length red_rect bar_length0'+[i]+'"></div>';
+				  tag +='</div>';
+				  tag +='<span class="provider_name">KT</span>';
+				  tag +='</div>';
+				  tag +='<div class="bar_wrap next_margin">';
+				  tag +='<div class="dateandract">';
+				  tag +='<span class="speed_data datanum_txt1'+[i]+'"></span>';
+				  tag +='<div class="bar_length orange_rect bar_length1'+[i]+'"></div>';
+				  tag +='</div>';
+				  tag +='<span class="provider_name">SKT</span>';
+				  tag +='</div>';
+				  tag +='<div class="bar_wrap next_margin">';
+				  tag +='<div class="dateandract">';
+				  tag +='<span class="speed_data datanum_txt2'+[i]+'"></span>';
+				  tag +='<div class="bar_length pink_rect bar_length2'+[i]+'"></div>';
+				  tag +='</div>';
+				  tag +='<span class="provider_name">U+</span>';
+				  tag +='</div>';
+				  tag +='</div>';
+				  if (areaData[i] == '인천광역시'||areaData[i] == '부산광역시'||areaData[i] == '전라남도'||areaData[i] == '경상남도'){
+				  	tag +='<div class="bar_underline deepcolor"></div>';
+				  }else{
+				  	tag +='<div class="bar_underline defaultcolor"></div>';
+				  }
+				  tag +='<span class="area_text">'+areaData[i]+'</span>';
+				  tag +='</div>';
+				  
+				  $( '.map_wrap' ).append(tag);
+				  $( '.mapPosition'+[i]).css("left",positionXdata[i]);
+				  $( '.mapPosition'+[i]).css("top",positionYdata[i]);
+		  }
+
+		  for(i = 0;i < dataArray.length;i++){
+			  for(j = 0;j < areaData.length;j++){
+				var presentValue = dataArray[i][j];
+
+				if(presentValue == maxValue){ 
+					var result = 46; //bar_length길이 최대 46px
+				}else if(presentValue == 0){
+					var result = 1; 
+				}else if(presentValue == 'nodata'){
+					var result = 1; 
+				}else if(presentValue == '-'){
+					var result = 1; 
+				}else{ 
+					var persent = maxValue / presentValue * 100;
+					var result = Math.floor(pixel / persent * 100);
+				}
+					
+				var resultPixel = result;
+				
+				$( '.bar_length'+[i]+[j] ).height( resultPixel+'px' );
+				if(presentValue == 'nodata'){ 
+					$( '.datanum_txt'+[i]+[j] ).text('');
+				}else if(presentValue == '-'){ 
+					$( '.datanum_txt'+[i]+[j] ).text('-');
+				}else{ 
+					$( '.datanum_txt'+[i]+[j] ).text( Math.floor(dataArray[i][j]) );
+				}
+			  }
+		  }
+	} );
+</script>
+</head>
+<body>
+	<div class="middle_wrap">
+  		<div class="middle_wrap_inner">
+    		<div class="map_wrap"></div>
+  		</div>
+	</div>
+</body>
+</html>
